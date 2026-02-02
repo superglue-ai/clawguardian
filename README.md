@@ -18,7 +18,8 @@ openclaw plugins install clawguardian
 - **Allowlists**: Skip detection for specific tools, patterns, or sessions
 - **Custom Patterns**: Add your own regex patterns
 
-Or for development:
+![unnamed](https://github.com/user-attachments/assets/7f83bb5b-91e4-4e24-96e8-73d65842610a)
+
 
 ## Configuration
 
