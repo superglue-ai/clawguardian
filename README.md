@@ -26,7 +26,7 @@ Done. The command ran, but ClawGuardian redacted the output since it detects the
 - **Allowlists**: Skip detection for specific tools, patterns, or sessions
 - **Custom Patterns**: Add your own regex patterns
 
-![unnamed (1)](https://github.com/user-attachments/assets/f3561516-f656-4b38-85be-578bf2698363)
+<img width="1536" height="1024" alt="ChatGPT Image Feb 2, 2026, 07_52_03 PM (1)" src="https://github.com/user-attachments/assets/e9793713-03d5-4d4e-a622-07fbcc3ab44d" />
 
 
 ## Configuration
