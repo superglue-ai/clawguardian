@@ -1,15 +1,6 @@
 # Dependencies
 node_modules/
 
-# Build output
-dist/
-*.js
-*.js.map
-*.d.ts
-
-# Keep source files
-!src/**/*.ts
-
 # IDE
 .idea/
 .vscode/
@@ -26,3 +17,6 @@ npm-debug.log*
 
 # Test coverage
 coverage/
+
+# Build output (committed for npm, but can be rebuilt)
+# dist/

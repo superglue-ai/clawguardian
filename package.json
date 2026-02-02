@@ -1,20 +1,63 @@
 {
-  "name": "@openclaw/clawguard",
-  "version": "2026.2.1",
-  "description": "OpenClaw secret detection and PII filtering for tool calls",
+  "name": "@anthropic/clawguard",
+  "version": "0.1.0",
+  "description": "Security plugin for OpenClaw - secret detection, PII filtering, and destructive command protection",
   "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./plugin-sdk": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "openclaw.plugin.json",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "openclaw",
+    "plugin",
+    "security",
+    "pii",
+    "secrets",
+    "redaction",
+    "ai-safety"
+  ],
+  "author": "Superglue AI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/superglue-ai/clawguard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/superglue-ai/clawguard/issues"
+  },
+  "homepage": "https://github.com/superglue-ai/clawguard#readme",
+  "peerDependencies": {
+    "openclaw": ">=2026.1.0"
+  },
   "dependencies": {
     "@sinclair/typebox": "0.34.48",
-    "fast-luhn": "^2.0.2",
     "libphonenumber-js": "^1.12.36"
   },
   "devDependencies": {
     "openclaw": "workspace:*",
+    "typescript": "^5.7.0",
     "vitest": "^3.2.4"
   },
   "openclaw": {
     "extensions": [
-      "./index.ts"
+      "./dist/index.js"
     ]
   }
 }

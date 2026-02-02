@@ -1,0 +1,1 @@
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../destructive/index.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAEH,YAAY,EAAE,mBAAmB,EAAE,mBAAmB,EAAE,gBAAgB,EAAE,MAAM,eAAe,CAAC;AAEhG,OAAO,EACL,iBAAiB,EACjB,kBAAkB,EAClB,eAAe,EACf,gBAAgB,EAChB,gBAAgB,EAChB,mBAAmB,EACnB,iBAAiB,EACjB,kBAAkB,EAClB,qBAAqB,EACrB,gBAAgB,EAChB,gBAAgB,EAChB,wBAAwB,GACzB,MAAM,eAAe,CAAC"}

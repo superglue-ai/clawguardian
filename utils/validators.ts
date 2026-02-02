@@ -3,7 +3,7 @@
  * Uses external libraries for robust validation after regex matching.
  */
 
-import luhn from "fast-luhn";
+import type { CountryCode } from "libphonenumber-js";
 import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 
 /**
@@ -22,14 +22,28 @@ export function isValidCreditCard(candidate: string): boolean {
   if (/^(\d)\1+$/.test(digits)) {
     return false;
   }
-  return luhn(digits);
+  // Luhn algorithm inline (avoid import issues)
+  let sum = 0;
+  let isEven = false;
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let digit = parseInt(digits[i], 10);
+    if (isEven) {
+      digit *= 2;
+      if (digit > 9) {
+        digit -= 9;
+      }
+    }
+    sum += digit;
+    isEven = !isEven;
+  }
+  return sum % 10 === 0;
 }
 
 /**
  * Validate a phone number using libphonenumber-js.
  * Uses strict validation to ensure the number is actually valid.
  */
-export function isValidPhone(candidate: string, defaultCountry = "US"): boolean {
+export function isValidPhone(candidate: string, defaultCountry: CountryCode = "US"): boolean {
   try {
     // First try parsing with the default country
     if (isValidPhoneNumber(candidate, defaultCountry)) {

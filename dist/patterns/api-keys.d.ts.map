@@ -1,0 +1,1 @@
+{"version":3,"file":"api-keys.d.ts","sourceRoot":"","sources":["../../patterns/api-keys.ts"],"names":[],"mappings":"AAAA;;GAEG;AAEH,OAAO,KAAK,EAAE,QAAQ,EAAE,MAAM,cAAc,CAAC;AAE7C,MAAM,MAAM,WAAW,GAAG;IAAE,IAAI,EAAE,MAAM,CAAC;IAAC,KAAK,EAAE,MAAM,CAAC;IAAC,QAAQ,CAAC,EAAE,QAAQ,CAAA;CAAE,CAAC;AAE/E,eAAO,MAAM,gBAAgB,EAAE,WAAW,EAmEzC,CAAC"}
