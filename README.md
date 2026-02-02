@@ -8,6 +8,14 @@ Security plugin for OpenClaw that detects and filters sensitive data in tool cal
 openclaw plugins install clawguardian
 ```
 
+## Example
+
+```
+$ openclaw agent --message "run echo '4358 9100 8899 4843'" --agent main
+19:33:20 [plugins] ClawGuardian: pii_credit_card (high) detected in tool exec params
+Done. The command ran, but ClawGuardian redacted the output since it detects the card-like format.
+```
+
 ## Features
 
 - **Secret Detection**: API keys, tokens, cloud credentials, private keys

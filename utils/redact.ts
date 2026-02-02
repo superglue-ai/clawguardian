@@ -5,17 +5,10 @@
 import type { ClawGuardianConfig } from "../config.js";
 import { buildPatterns } from "../patterns/index.js";
 
-const REDACT_MIN_LENGTH = 18;
-const REDACT_KEEP_START = 6;
-const REDACT_KEEP_END = 4;
+const REDACT_PLACEHOLDER = "[REDACTED]";
 
-function maskToken(token: string): string {
-  if (token.length < REDACT_MIN_LENGTH) {
-    return "***";
-  }
-  const start = token.slice(0, REDACT_KEEP_START);
-  const end = token.slice(-REDACT_KEEP_END);
-  return `${start}…${end}`;
+function maskToken(_token: string): string {
+  return REDACT_PLACEHOLDER;
 }
 
 function redactPemBlock(block: string): string {
