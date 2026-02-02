@@ -21,14 +21,6 @@ function buildClawGuardianContext(cfg: ClawGuardianConfig): string {
   lines.push("If a tool call is blocked with a message asking you to confirm:");
   lines.push('- Add `"_clawguardian_confirm": true` to the tool parameters and retry');
   lines.push("- Only confirm if you understand the risk and the action is intentional");
-  lines.push("- For secrets/PII, confirmation will still redact the sensitive data");
-  lines.push("");
-  lines.push("Actions:");
-  lines.push("- block: Tool call rejected entirely");
-  lines.push("- redact: Sensitive data replaced with [REDACTED]");
-  lines.push("- confirm: User approval required (exec/bash tools only)");
-  lines.push("- agent-confirm: You must retry with _clawguardian_confirm: true");
-  lines.push("- warn/log: Allowed with logging");
 
   // List what's being monitored
   const monitored: string[] = [];

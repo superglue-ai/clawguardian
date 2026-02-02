@@ -62,55 +62,60 @@ export function registerBeforeToolCallHook(api, cfg) {
         // Check for destructive commands first
         if (cfg.destructive.enabled) {
             const destructiveMatch = detectDestructive(toolName, params);
-            if (destructiveMatch && categoryEnabled(destructiveMatch, cfg.destructive.categories)) {
-                // Get action based on severity level
-                const action = getActionForSeverity(destructiveMatch.severity, cfg.destructive);
-                // Skip if action is "log" - just log silently
-                if (action !== "log") {
-                    const msg = `ClawGuardian: ${destructiveMatch.severity} severity - ${destructiveMatch.reason}`;
-                    if (cfg.logging.logDetections) {
-                        api.logger.warn(msg);
+            if (destructiveMatch) {
+                const categoryIsEnabled = categoryEnabled(destructiveMatch, cfg.destructive.categories);
+                if (categoryIsEnabled) {
+                    // Get action based on severity level
+                    const action = getActionForSeverity(destructiveMatch.severity, cfg.destructive);
+                    // Skip if action is "log" - just log silently
+                    if (action !== "log") {
+                        const msg = `ClawGuardian: ${destructiveMatch.severity} severity - ${destructiveMatch.reason}`;
+                        if (cfg.logging.logDetections) {
+                            api.logger.warn(msg);
+                        }
                     }
-                }
-                if (action === "block") {
-                    return {
-                        block: true,
-                        blockReason: `Blocked by ClawGuardian: ${destructiveMatch.reason}`,
-                    };
-                }
-                if (action === "confirm") {
-                    // For exec tool, set ask: "always" to trigger OpenClaw's built-in approval flow
-                    if (toolName === "exec" || toolName === "bash") {
+                    if (action === "block") {
                         return {
-                            params: {
-                                ...params,
-                                ask: "always",
-                                _clawguardian: {
-                                    reason: destructiveMatch.reason,
-                                    severity: destructiveMatch.severity,
-                                    category: destructiveMatch.category,
-                                },
-                            },
+                            block: true,
+                            blockReason: `Blocked by ClawGuardian: ${destructiveMatch.reason}`,
                         };
                     }
-                    // For non-exec tools, fall back to agent-confirm behavior
-                }
-                // agent-confirm: block until agent retries with _clawguardian_confirm: true
-                if (action === "confirm" || action === "agent-confirm") {
-                    if (confirmed) {
-                        if (cfg.logging.logDetections) {
-                            api.logger.info(`ClawGuardian: Agent confirmed destructive action - ${destructiveMatch.reason}`);
+                    if (action === "confirm") {
+                        // For exec tool, set ask: "always" to trigger OpenClaw's built-in approval flow
+                        if (toolName === "exec" || toolName === "bash") {
+                            const result = {
+                                params: {
+                                    ...params,
+                                    ask: "always",
+                                    _clawguardian: {
+                                        reason: destructiveMatch.reason,
+                                        severity: destructiveMatch.severity,
+                                        category: destructiveMatch.category,
+                                    },
+                                },
+                            };
+                            return result;
                         }
-                        // Strip the confirm flag and allow
-                        return { params: stripConfirmFlag(params) };
+                        // For non-exec tools, fall back to agent-confirm behavior
                     }
-                    // Block and ask agent to confirm
-                    return {
-                        block: true,
-                        blockReason: `ClawGuardian: ${destructiveMatch.reason}. To proceed, re-run with \`_clawguardian_confirm: true\` in params.`,
-                    };
+                    // agent-confirm: block until agent retries with _clawguardian_confirm: true
+                    if (action === "confirm" || action === "agent-confirm") {
+                        if (confirmed) {
+                            if (cfg.logging.logDetections) {
+                                api.logger.warn(`ClawGuardian: Agent confirmed destructive action - ${destructiveMatch.reason}`);
+                            }
+                            // Strip the confirm flag and allow
+                            const strippedParams = stripConfirmFlag(params);
+                            return { params: strippedParams };
+                        }
+                        // Block and ask agent to confirm
+                        return {
+                            block: true,
+                            blockReason: `ClawGuardian: ${destructiveMatch.reason}. To proceed, re-run with \`_clawguardian_confirm: true\` in params.`,
+                        };
+                    }
+                    // action === "warn" or "log": continue (log was already done for "warn")
                 }
-                // action === "warn" or "log": continue (log was already done for "warn")
             }
         }
         // Check for secrets/PII
@@ -138,7 +143,7 @@ export function registerBeforeToolCallHook(api, cfg) {
                 if (action === "confirm" || action === "agent-confirm") {
                     if (confirmed) {
                         if (cfg.logging.logDetections) {
-                            api.logger.info(`ClawGuardian: Agent confirmed sending ${match.type} - proceeding with redaction`);
+                            api.logger.warn(`ClawGuardian: Agent confirmed sending ${match.type} - proceeding with redaction`);
                         }
                         // Even with confirmation, redact the sensitive data
                         const redacted = redactParams(params, cfg);
