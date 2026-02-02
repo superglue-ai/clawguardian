@@ -1,5 +1,5 @@
 {
-  "name": "@anthropic/clawguard",
+  "name": "@superglue-ai/clawguard",
   "version": "0.1.0",
   "description": "Security plugin for OpenClaw - secret detection, PII filtering, and destructive command protection",
   "type": "module",
