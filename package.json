@@ -1,6 +1,6 @@
 {
   "name": "clawguardian",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Security plugin for OpenClaw - secret detection, PII filtering, and destructive command protection",
   "type": "module",
   "main": "dist/index.js",
@@ -37,12 +37,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/superglue-ai/clawguard.git"
+    "url": "git+https://github.com/superglue-ai/clawguardian.git"
   },
   "bugs": {
-    "url": "https://github.com/superglue-ai/clawguard/issues"
+    "url": "https://github.com/superglue-ai/clawguardian/issues"
   },
-  "homepage": "https://github.com/superglue-ai/clawguard#readme",
+  "homepage": "https://github.com/superglue-ai/clawguardian#readme",
   "peerDependencies": {
     "openclaw": ">=2026.1.0"
   },
