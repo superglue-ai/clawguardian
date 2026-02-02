@@ -1,6 +1,6 @@
 {
   "name": "clawguardian",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "Security plugin for OpenClaw - secret detection, PII filtering, and destructive command protection",
   "type": "module",
   "main": "dist/index.js",
@@ -51,7 +51,6 @@
     "libphonenumber-js": "^1.12.36"
   },
   "devDependencies": {
-    "openclaw": "workspace:*",
     "typescript": "^5.7.0",
     "vitest": "^3.2.4"
   },

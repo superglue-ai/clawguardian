@@ -4,55 +4,14 @@
 /**
  * Build the ClawGuardian context to inject into the system prompt.
  */
-function buildClawGuardianContext(cfg) {
-    const lines = [];
-    lines.push("<clawguardian>");
-    lines.push("ClawGuardian is active. It monitors tool calls for sensitive data and destructive commands.");
-    // Explain the agent-confirm mechanism
-    lines.push("");
-    lines.push("If a tool call is blocked with a message asking you to confirm:");
-    lines.push('- Add `"_clawguardian_confirm": true` to the tool parameters and retry');
-    lines.push("- Only confirm if you understand the risk and the action is intentional");
-    // List what's being monitored
-    const monitored = [];
-    if (cfg.secrets.enabled) {
-        monitored.push("API keys, tokens, credentials");
-    }
-    if (cfg.pii.enabled) {
-        const piiTypes = [];
-        if (cfg.pii.categories.ssn) {
-            piiTypes.push("SSN");
-        }
-        if (cfg.pii.categories.creditCard) {
-            piiTypes.push("credit cards");
-        }
-        if (cfg.pii.categories.email) {
-            piiTypes.push("emails");
-        }
-        if (cfg.pii.categories.phone) {
-            piiTypes.push("phone numbers");
-        }
-        if (piiTypes.length > 0) {
-            monitored.push(`PII (${piiTypes.join(", ")})`);
-        }
-    }
-    if (cfg.destructive.enabled) {
-        monitored.push("destructive commands (rm -rf, git reset, DROP TABLE, etc.)");
-    }
-    if (monitored.length > 0) {
-        lines.push("");
-        lines.push(`Monitoring: ${monitored.join("; ")}`);
-    }
-    lines.push("</clawguardian>");
-    return lines.join("\n");
+function buildClawGuardianContext(_cfg) {
+    return `<clawguardian>
+ClawGuardian active. If a tool call is blocked, add "_clawguardian_confirm": true to params and retry.
+</clawguardian>`;
 }
-export function registerBeforeAgentStartHook(api, cfg) {
-    // Only inject if there's something to monitor
-    if (!cfg.secrets.enabled && !cfg.pii.enabled && !cfg.destructive.enabled) {
-        return;
-    }
+export function registerBeforeAgentStartHook(api, _cfg) {
     api.on("before_agent_start", (_event, _ctx) => {
-        const context = buildClawGuardianContext(cfg);
+        const context = buildClawGuardianContext(_cfg);
         return {
             prependContext: context,
         };

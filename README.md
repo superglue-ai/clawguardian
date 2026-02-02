@@ -2,6 +2,12 @@
 
 Security plugin for OpenClaw that detects and filters sensitive data in tool calls.
 
+## Quick Start
+
+```bash
+openclaw plugins install clawguardian
+```
+
 ## Features
 
 - **Secret Detection**: API keys, tokens, cloud credentials, private keys
@@ -12,86 +18,87 @@ Security plugin for OpenClaw that detects and filters sensitive data in tool cal
 - **Allowlists**: Skip detection for specific tools, patterns, or sessions
 - **Custom Patterns**: Add your own regex patterns
 
-## Installation
-
-```bash
-# From the openclaw root directory
-cd extensions/clawguardian
-npm install --omit=dev
-```
+Or for development:
 
 ## Configuration
 
-Add to your OpenClaw config (`~/.openclaw/config.yaml`):
+Add to your OpenClaw config (`~/.openclaw/openclaw.json`):
 
-```yaml
-plugins:
-  clawguardian:
-    # Enable/disable detection categories
-    secrets:
-      enabled: true
-      action: redact  # default action
-      severityActions:
-        critical: block      # private keys
-        high: redact         # API keys, tokens
-        medium: redact
-        low: warn
-      categories:
-        apiKeys: true
-        cloudCredentials: true
-        privateKeys: true
-        tokens: true
-
-    pii:
-      enabled: true
-      action: redact
-      severityActions:
-        critical: block
-        high: redact         # SSN, credit cards
-        medium: warn         # email, phone
-        low: warn
-      categories:
-        ssn: true
-        creditCard: true
-        email: true          # warn only by default
-        phone: true          # warn only by default
-
-    destructive:
-      enabled: true
-      action: confirm        # requires user approval for exec tools
-      severityActions:
-        critical: block      # rm -rf /, DROP DATABASE, dd
-        high: confirm        # rm -rf, git reset --hard
-        medium: confirm      # kill, git checkout
-        low: warn            # git branch -d
-      categories:
-        fileDelete: true
-        gitDestructive: true
-        sqlDestructive: true
-        systemDestructive: true
-        processKill: true
-        networkDestructive: true
-        privilegeEscalation: true
-
-    # Skip detection for specific cases
-    allowlist:
-      tools:
-        - "safe_tool"
-      patterns:
-        - "sk-test-.*"       # test API keys
-      sessions:
-        - "trusted-session"
-
-    # Add custom detection patterns
-    customPatterns:
-      - name: internal_token
-        pattern: "INTERNAL_[A-Z0-9]{32}"
-        severity: high
-        action: block
-
-    logging:
-      logDetections: true
-      logLevel: warn
+```json
+{
+  "plugins": {
+    "clawguardian": {
+      "secrets": {
+        "enabled": true,
+        "action": "redact",
+        "severityActions": {
+          "critical": "block",
+          "high": "redact",
+          "medium": "redact",
+          "low": "warn"
+        },
+        "categories": {
+          "apiKeys": true,
+          "cloudCredentials": true,
+          "privateKeys": true,
+          "tokens": true
+        }
+      },
+      "pii": {
+        "enabled": true,
+        "action": "redact",
+        "severityActions": {
+          "critical": "block",
+          "high": "redact",
+          "medium": "warn",
+          "low": "warn"
+        },
+        "categories": {
+          "ssn": true,
+          "creditCard": true,
+          "email": true,
+          "phone": true
+        }
+      },
+      "destructive": {
+        "enabled": true,
+        "action": "confirm",
+        "severityActions": {
+          "critical": "block",
+          "high": "confirm",
+          "medium": "confirm",
+          "low": "warn"
+        },
+        "categories": {
+          "fileDelete": true,
+          "gitDestructive": true,
+          "sqlDestructive": true,
+          "systemDestructive": true,
+          "processKill": true,
+          "networkDestructive": true,
+          "privilegeEscalation": true
+        }
+      },
+      "allowlist": {
+        "tools": ["safe_tool"],
+        "patterns": ["sk-test-.*"],
+        "sessions": ["trusted-session"]
+      },
+      "customPatterns": [
+        {
+          "name": "internal_token",
+          "pattern": "INTERNAL_[A-Z0-9]{32}",
+          "severity": "high",
+          "action": "block"
+        }
+      ],
+      "logging": {
+        "logDetections": true,
+        "logLevel": "warn"
+      }
+    }
+  }
+}
 ```
 
 ## Actions

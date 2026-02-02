@@ -3,5 +3,5 @@
  */
 import type { OpenClawPluginApi } from "openclaw/plugin-sdk";
 import type { ClawGuardianConfig } from "../config.js";
-export declare function registerBeforeAgentStartHook(api: OpenClawPluginApi, cfg: ClawGuardianConfig): void;
+export declare function registerBeforeAgentStartHook(api: OpenClawPluginApi, _cfg: ClawGuardianConfig): void;
 //# sourceMappingURL=before-agent-start.d.ts.map
