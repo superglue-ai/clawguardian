@@ -53,8 +53,8 @@ plugins:
       categories:
         ssn: true
         creditCard: true
-        email: false         # disabled by default
-        phone: false         # disabled by default
+        email: true          # warn only by default
+        phone: true          # warn only by default
 
     destructive:
       enabled: true

@@ -196,13 +196,13 @@
               },
               "email": {
                 "type": "boolean",
-                "default": false,
-                "description": "Detect email addresses (medium severity)"
+                "default": true,
+                "description": "Detect email addresses (medium severity, warn only)"
               },
               "phone": {
                 "type": "boolean",
-                "default": false,
-                "description": "Detect phone numbers (medium severity)"
+                "default": true,
+                "description": "Detect phone numbers (medium severity, warn only)"
               }
             }
           }

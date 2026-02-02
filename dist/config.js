@@ -29,8 +29,8 @@ const DEFAULT_PII = {
     categories: {
         ssn: true, // high severity
         creditCard: true, // high severity
-        email: false, // medium severity (off by default - false positives)
-        phone: false, // medium severity (off by default - false positives)
+        email: true, // medium severity (warn only)
+        phone: true, // medium severity (warn only)
     },
 };
 const DEFAULT_DESTRUCTIVE = {
