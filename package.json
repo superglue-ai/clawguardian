@@ -1,0 +1,20 @@
+{
+  "name": "@openclaw/clawguard",
+  "version": "2026.2.1",
+  "description": "OpenClaw secret detection and PII filtering for tool calls",
+  "type": "module",
+  "dependencies": {
+    "@sinclair/typebox": "0.34.48",
+    "fast-luhn": "^2.0.2",
+    "libphonenumber-js": "^1.12.36"
+  },
+  "devDependencies": {
+    "openclaw": "workspace:*",
+    "vitest": "^3.2.4"
+  },
+  "openclaw": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}

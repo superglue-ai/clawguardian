@@ -1,0 +1,363 @@
+{
+  "id": "clawguard",
+  "name": "ClawGuard",
+  "description": "Secret detection, PII filtering, and destructive command protection for tool calls",
+  "uiHints": {
+    "secrets.enabled": {
+      "label": "Secret Detection",
+      "description": "Detect API keys, tokens, and credentials"
+    },
+    "secrets.action": {
+      "label": "Secrets Action",
+      "description": "Default action when secrets are detected"
+    },
+    "pii.enabled": {
+      "label": "PII Detection",
+      "description": "Detect personally identifiable information"
+    },
+    "pii.action": {
+      "label": "PII Action",
+      "description": "Default action when PII is detected"
+    },
+    "pii.categories.ssn": {
+      "label": "Filter SSN",
+      "description": "Detect US Social Security Numbers (high severity)"
+    },
+    "pii.categories.creditCard": {
+      "label": "Filter Credit Cards",
+      "description": "Detect credit card numbers (high severity)"
+    },
+    "pii.categories.email": {
+      "label": "Filter Email",
+      "description": "Detect email addresses (medium severity)"
+    },
+    "pii.categories.phone": {
+      "label": "Filter Phone",
+      "description": "Detect phone numbers (medium severity)"
+    },
+    "destructive.enabled": {
+      "label": "Destructive Command Detection",
+      "description": "Detect and gate dangerous commands like rm -rf, git reset --hard"
+    },
+    "destructive.action": {
+      "label": "Destructive Action",
+      "description": "Default action when a destructive command is detected"
+    },
+    "destructive.severityActions.critical": {
+      "label": "Critical Severity Action",
+      "description": "Action for critical severity (rm -rf /, DROP DATABASE, dd)"
+    },
+    "destructive.severityActions.high": {
+      "label": "High Severity Action",
+      "description": "Action for high severity (rm -rf, git reset --hard, sudo)"
+    },
+    "destructive.severityActions.medium": {
+      "label": "Medium Severity Action",
+      "description": "Action for medium severity (kill, git checkout)"
+    },
+    "destructive.severityActions.low": {
+      "label": "Low Severity Action",
+      "description": "Action for low severity (git branch -d)"
+    }
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "filterToolInputs": {
+        "type": "boolean",
+        "default": true,
+        "description": "Filter sensitive data in tool inputs"
+      },
+      "filterToolOutputs": {
+        "type": "boolean",
+        "default": true,
+        "description": "Filter sensitive data in tool outputs"
+      },
+      "secrets": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Secret detection configuration (API keys, tokens, credentials)",
+        "properties": {
+          "enabled": { "type": "boolean", "default": true },
+          "action": {
+            "type": "string",
+            "enum": ["block", "redact", "agent-confirm", "warn", "log"],
+            "default": "redact",
+            "description": "Default action for secrets. Note: 'confirm' is only for exec tools; use 'agent-confirm' for agent acknowledgment."
+          },
+          "severityActions": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Per-severity actions for secrets",
+            "properties": {
+              "critical": {
+                "type": "string",
+                "enum": ["block", "redact", "agent-confirm", "warn", "log"],
+                "default": "block"
+              },
+              "high": {
+                "type": "string",
+                "enum": ["block", "redact", "agent-confirm", "warn", "log"],
+                "default": "redact"
+              },
+              "medium": {
+                "type": "string",
+                "enum": ["block", "redact", "agent-confirm", "warn", "log"],
+                "default": "redact"
+              },
+              "low": {
+                "type": "string",
+                "enum": ["block", "redact", "agent-confirm", "warn", "log"],
+                "default": "warn"
+              }
+            }
+          },
+          "categories": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "apiKeys": {
+                "type": "boolean",
+                "default": true,
+                "description": "Detect API keys (high severity)"
+              },
+              "cloudCredentials": {
+                "type": "boolean",
+                "default": true,
+                "description": "Detect cloud credentials (high severity)"
+              },
+              "privateKeys": {
+                "type": "boolean",
+                "default": true,
+                "description": "Detect PEM private keys (critical severity)"
+              },
+              "tokens": {
+                "type": "boolean",
+                "default": true,
+                "description": "Detect bearer tokens and auth headers (high severity)"
+              }
+            }
+          }
+        }
+      },
+      "pii": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "PII detection configuration",
+        "properties": {
+          "enabled": { "type": "boolean", "default": true },
+          "action": {
+            "type": "string",
+            "enum": ["block", "redact", "agent-confirm", "warn", "log"],
+            "default": "redact",
+            "description": "Default action for PII. Note: 'confirm' is only for exec tools; use 'agent-confirm' for agent acknowledgment."
+          },
+          "severityActions": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Per-severity actions for PII",
+            "properties": {
+              "critical": {
+                "type": "string",
+                "enum": ["block", "redact", "agent-confirm", "warn", "log"],
+                "default": "block"
+              },
+              "high": {
+                "type": "string",
+                "enum": ["block", "redact", "agent-confirm", "warn", "log"],
+                "default": "redact"
+              },
+              "medium": {
+                "type": "string",
+                "enum": ["block", "redact", "agent-confirm", "warn", "log"],
+                "default": "redact"
+              },
+              "low": {
+                "type": "string",
+                "enum": ["block", "redact", "agent-confirm", "warn", "log"],
+                "default": "warn"
+              }
+            }
+          },
+          "categories": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "ssn": {
+                "type": "boolean",
+                "default": true,
+                "description": "Detect US Social Security Numbers (high severity)"
+              },
+              "creditCard": {
+                "type": "boolean",
+                "default": true,
+                "description": "Detect credit card numbers (high severity)"
+              },
+              "email": {
+                "type": "boolean",
+                "default": false,
+                "description": "Detect email addresses (medium severity)"
+              },
+              "phone": {
+                "type": "boolean",
+                "default": false,
+                "description": "Detect phone numbers (medium severity)"
+              }
+            }
+          }
+        }
+      },
+      "destructive": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Destructive command detection configuration",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable destructive command detection (SafeExec patterns)"
+          },
+          "action": {
+            "type": "string",
+            "enum": ["block", "confirm", "agent-confirm", "warn", "log"],
+            "default": "confirm",
+            "description": "Default action for destructive commands. 'confirm' uses OpenClaw's exec approval; 'agent-confirm' requires agent to retry with _clawguard_confirm flag."
+          },
+          "severityActions": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Per-severity actions for destructive commands",
+            "properties": {
+              "critical": {
+                "type": "string",
+                "enum": ["block", "confirm", "agent-confirm", "warn", "log"],
+                "default": "block",
+                "description": "Action for critical severity (rm -rf /, DROP DATABASE, dd)"
+              },
+              "high": {
+                "type": "string",
+                "enum": ["block", "confirm", "agent-confirm", "warn", "log"],
+                "default": "confirm",
+                "description": "Action for high severity (rm -rf, git reset --hard, sudo)"
+              },
+              "medium": {
+                "type": "string",
+                "enum": ["block", "confirm", "agent-confirm", "warn", "log"],
+                "default": "confirm",
+                "description": "Action for medium severity (kill, git checkout)"
+              },
+              "low": {
+                "type": "string",
+                "enum": ["block", "confirm", "agent-confirm", "warn", "log"],
+                "default": "warn",
+                "description": "Action for low severity (git branch -d)"
+              }
+            }
+          },
+          "categories": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "fileDelete": {
+                "type": "boolean",
+                "default": true,
+                "description": "Detect rm -rf and similar file deletion"
+              },
+              "gitDestructive": {
+                "type": "boolean",
+                "default": true,
+                "description": "Detect git reset, clean -f, push --force, etc."
+              },
+              "sqlDestructive": {
+                "type": "boolean",
+                "default": true,
+                "description": "Detect DROP, TRUNCATE, DELETE without WHERE"
+              },
+              "systemDestructive": {
+                "type": "boolean",
+                "default": true,
+                "description": "Detect shutdown, disk formatting, etc."
+              },
+              "processKill": {
+                "type": "boolean",
+                "default": true,
+                "description": "Detect kill, pkill, killall commands"
+              },
+              "networkDestructive": {
+                "type": "boolean",
+                "default": true,
+                "description": "Detect firewall modification commands"
+              },
+              "privilegeEscalation": {
+                "type": "boolean",
+                "default": true,
+                "description": "Detect sudo, doas, su, pkexec commands"
+              }
+            }
+          }
+        }
+      },
+      "customPatterns": {
+        "type": "array",
+        "description": "Custom regex patterns to detect",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string", "description": "Pattern name" },
+            "pattern": { "type": "string", "description": "Regex pattern" },
+            "severity": {
+              "type": "string",
+              "enum": ["critical", "high", "medium", "low"],
+              "description": "Severity level for this pattern"
+            },
+            "action": {
+              "type": "string",
+              "enum": ["block", "redact", "agent-confirm", "warn", "log"],
+              "description": "Override action for this pattern"
+            }
+          },
+          "required": ["name", "pattern"]
+        }
+      },
+      "allowlist": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Allowlist configuration to skip detection",
+        "properties": {
+          "tools": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Tool names to skip"
+          },
+          "patterns": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Regex patterns for values to allow (e.g., test keys)"
+          },
+          "sessions": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Session keys to skip"
+          }
+        }
+      },
+      "logging": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "logDetections": {
+            "type": "boolean",
+            "default": true,
+            "description": "Log when sensitive data is detected"
+          },
+          "logLevel": {
+            "type": "string",
+            "enum": ["debug", "info", "warn", "error"],
+            "default": "warn"
+          }
+        }
+      }
+    }
+  }
+}
