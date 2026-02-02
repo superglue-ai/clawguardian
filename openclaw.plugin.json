@@ -1,6 +1,6 @@
 {
-  "id": "clawguard",
-  "name": "ClawGuard",
+  "id": "clawguardian",
+  "name": "ClawGuardian",
   "description": "Secret detection, PII filtering, and destructive command protection for tool calls",
   "uiHints": {
     "secrets.enabled": {
@@ -222,7 +222,7 @@
             "type": "string",
             "enum": ["block", "confirm", "agent-confirm", "warn", "log"],
             "default": "confirm",
-            "description": "Default action for destructive commands. 'confirm' uses OpenClaw's exec approval; 'agent-confirm' requires agent to retry with _clawguard_confirm flag."
+            "description": "Default action for destructive commands. 'confirm' uses OpenClaw's exec approval; 'agent-confirm' requires agent to retry with _clawguardian_confirm flag."
           },
           "severityActions": {
             "type": "object",

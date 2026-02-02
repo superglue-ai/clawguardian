@@ -1,5 +1,5 @@
 /**
- * ClawGuard plugin configuration types and validation.
+ * ClawGuardian plugin configuration types and validation.
  */
 /**
  * Unified severity levels used across all detection types.
@@ -10,7 +10,7 @@ export type Severity = "critical" | "high" | "medium" | "low";
  * - "block": Reject the tool call entirely
  * - "redact": Replace sensitive data with [REDACTED] (secrets/PII only)
  * - "confirm": Require user confirmation (exec/bash tools only, via OpenClaw approval flow)
- * - "agent-confirm": Block until agent retries with _clawguard_confirm: true
+ * - "agent-confirm": Block until agent retries with _clawguardian_confirm: true
  * - "warn": Log warning but allow execution
  * - "log": Silent logging only
  */
@@ -27,7 +27,7 @@ export type SeverityActions = {
 /**
  * Secrets detection config (API keys, tokens, cloud credentials, private keys).
  */
-export type ClawGuardSecretsConfig = {
+export type ClawGuardianSecretsConfig = {
     enabled: boolean;
     /** Default action for secrets */
     action: SeverityAction;
@@ -44,7 +44,7 @@ export type ClawGuardSecretsConfig = {
 /**
  * PII detection config.
  */
-export type ClawGuardPiiConfig = {
+export type ClawGuardianPiiConfig = {
     enabled: boolean;
     /** Default action for PII */
     action: SeverityAction;
@@ -62,7 +62,7 @@ export type ClawGuardPiiConfig = {
  * Destructive command detection config.
  * Based on SafeExec patterns (https://github.com/agentify-sh/safeexec).
  */
-export type ClawGuardDestructiveConfig = {
+export type ClawGuardianDestructiveConfig = {
     enabled: boolean;
     /** Default action for destructive commands */
     action: SeverityAction;
@@ -79,45 +79,45 @@ export type ClawGuardDestructiveConfig = {
         privilegeEscalation: boolean;
     };
 };
-export type ClawGuardCustomPattern = {
+export type ClawGuardianCustomPattern = {
     name: string;
     pattern: string;
     severity?: Severity;
     action?: SeverityAction;
 };
-export type ClawGuardAllowlist = {
+export type ClawGuardianAllowlist = {
     tools?: string[];
     patterns?: string[];
     sessions?: string[];
 };
-export type ClawGuardLogging = {
+export type ClawGuardianLogging = {
     logDetections: boolean;
     logLevel: "debug" | "info" | "warn" | "error";
 };
-export type ClawGuardConfig = {
+export type ClawGuardianConfig = {
     filterToolInputs: boolean;
     filterToolOutputs: boolean;
-    secrets: ClawGuardSecretsConfig;
-    pii: ClawGuardPiiConfig;
-    destructive: ClawGuardDestructiveConfig;
-    customPatterns: ClawGuardCustomPattern[];
-    allowlist: ClawGuardAllowlist;
-    logging: ClawGuardLogging;
+    secrets: ClawGuardianSecretsConfig;
+    pii: ClawGuardianPiiConfig;
+    destructive: ClawGuardianDestructiveConfig;
+    customPatterns: ClawGuardianCustomPattern[];
+    allowlist: ClawGuardianAllowlist;
+    logging: ClawGuardianLogging;
 };
-export type ClawGuardMode = SeverityAction;
+export type ClawGuardianMode = SeverityAction;
 export type DestructiveAction = SeverityAction;
-export type ClawGuardFilters = ClawGuardSecretsConfig["categories"] & {
-    pii: ClawGuardPiiConfig["categories"] & {
+export type ClawGuardianFilters = ClawGuardianSecretsConfig["categories"] & {
+    pii: ClawGuardianPiiConfig["categories"] & {
         enabled: boolean;
     };
 };
-export type ClawGuardPiiFilters = ClawGuardPiiConfig["categories"] & {
+export type ClawGuardianPiiFilters = ClawGuardianPiiConfig["categories"] & {
     enabled: boolean;
 };
 /**
  * Parse and validate plugin config with defaults.
  */
-export declare function parseClawGuardConfig(raw: unknown): ClawGuardConfig;
+export declare function parseClawGuardianConfig(raw: unknown): ClawGuardianConfig;
 /**
  * Get the action for a given severity level from a config section.
  */

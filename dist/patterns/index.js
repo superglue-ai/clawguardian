@@ -1,5 +1,5 @@
 /**
- * Pattern registry: aggregates patterns by category for ClawGuard.
+ * Pattern registry: aggregates patterns by category for ClawGuardian.
  */
 import { API_KEY_PATTERNS } from "./api-keys.js";
 import { CLOUD_CREDENTIAL_PATTERNS } from "./cloud-credentials.js";

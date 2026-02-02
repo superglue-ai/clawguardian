@@ -1,4 +1,4 @@
-# ClawGuard
+# ClawGuardian
 
 Security plugin for OpenClaw that detects and filters sensitive data in tool calls.
 
@@ -16,7 +16,7 @@ Security plugin for OpenClaw that detects and filters sensitive data in tool cal
 
 ```bash
 # From the openclaw root directory
-cd extensions/clawguard
+cd extensions/clawguardian
 npm install --omit=dev
 ```
 
@@ -26,7 +26,7 @@ Add to your OpenClaw config (`~/.openclaw/config.yaml`):
 
 ```yaml
 plugins:
-  clawguard:
+  clawguardian:
     # Enable/disable detection categories
     secrets:
       enabled: true
@@ -101,7 +101,7 @@ plugins:
 | `block` | Reject the tool call entirely |
 | `redact` | Replace sensitive data with `[REDACTED]` |
 | `confirm` | Require user approval (exec/bash tools only, via OpenClaw's approval flow) |
-| `agent-confirm` | Block until agent retries with `_clawguard_confirm: true` in params |
+| `agent-confirm` | Block until agent retries with `_clawguardian_confirm: true` in params |
 | `warn` | Log warning but allow execution |
 | `log` | Silent logging only |
 
@@ -116,35 +116,35 @@ plugins:
 
 ## Agent Confirmation
 
-When a tool call is blocked with `agent-confirm`, the agent receives a message instructing it to retry with the `_clawguard_confirm: true` parameter:
+When a tool call is blocked with `agent-confirm`, the agent receives a message instructing it to retry with the `_clawguardian_confirm: true` parameter:
 
 ```json
 {
   "tool": "some_tool",
   "params": {
     "data": "sensitive content",
-    "_clawguard_confirm": true
+    "_clawguardian_confirm": true
   }
 }
 ```
 
-ClawGuard injects instructions into the agent's system prompt explaining this mechanism.
+ClawGuardian injects instructions into the agent's system prompt explaining this mechanism.
 
 ## API
 
 ### Hooks
 
-ClawGuard registers three hooks:
+ClawGuardian registers three hooks:
 
-1. **`before_agent_start`** (priority 50): Injects ClawGuard context into the system prompt
+1. **`before_agent_start`** (priority 50): Injects ClawGuardian context into the system prompt
 2. **`before_tool_call`** (priority 100): Filters tool inputs, detects destructive commands
 3. **`tool_result_persist`** (priority 100): Redacts/blocks sensitive data in tool outputs
 
 ### Detection Functions
 
 ```typescript
-import { detectSecret } from "clawguard/utils/matcher";
-import { detectDestructive } from "clawguard/destructive";
+import { detectSecret } from "clawguardian/utils/matcher";
+import { detectDestructive } from "clawguardian/destructive";
 
 // Detect secrets/PII in text
 const match = detectSecret(text, config);
@@ -159,7 +159,7 @@ const destructive = detectDestructive(toolName, params);
 
 ```bash
 # Run tests
-pnpm test extensions/clawguard/index.test.ts
+pnpm test extensions/clawguardian/index.test.ts
 
 # Type check
 pnpm build

@@ -1,25 +1,25 @@
 /**
- * before_agent_start hook: inject ClawGuard instructions into the system prompt.
+ * before_agent_start hook: inject ClawGuardian instructions into the system prompt.
  */
 
 import type { OpenClawPluginApi } from "openclaw/plugin-sdk";
-import type { ClawGuardConfig } from "../config.js";
+import type { ClawGuardianConfig } from "../config.js";
 
 /**
- * Build the ClawGuard context to inject into the system prompt.
+ * Build the ClawGuardian context to inject into the system prompt.
  */
-function buildClawGuardContext(cfg: ClawGuardConfig): string {
+function buildClawGuardianContext(cfg: ClawGuardianConfig): string {
   const lines: string[] = [];
 
-  lines.push("<clawguard>");
+  lines.push("<clawguardian>");
   lines.push(
-    "ClawGuard is active. It monitors tool calls for sensitive data and destructive commands.",
+    "ClawGuardian is active. It monitors tool calls for sensitive data and destructive commands.",
   );
 
   // Explain the agent-confirm mechanism
   lines.push("");
   lines.push("If a tool call is blocked with a message asking you to confirm:");
-  lines.push('- Add `"_clawguard_confirm": true` to the tool parameters and retry');
+  lines.push('- Add `"_clawguardian_confirm": true` to the tool parameters and retry');
   lines.push("- Only confirm if you understand the risk and the action is intentional");
   lines.push("- For secrets/PII, confirmation will still redact the sensitive data");
   lines.push("");
@@ -27,7 +27,7 @@ function buildClawGuardContext(cfg: ClawGuardConfig): string {
   lines.push("- block: Tool call rejected entirely");
   lines.push("- redact: Sensitive data replaced with [REDACTED]");
   lines.push("- confirm: User approval required (exec/bash tools only)");
-  lines.push("- agent-confirm: You must retry with _clawguard_confirm: true");
+  lines.push("- agent-confirm: You must retry with _clawguardian_confirm: true");
   lines.push("- warn/log: Allowed with logging");
 
   // List what's being monitored
@@ -62,12 +62,12 @@ function buildClawGuardContext(cfg: ClawGuardConfig): string {
     lines.push(`Monitoring: ${monitored.join("; ")}`);
   }
 
-  lines.push("</clawguard>");
+  lines.push("</clawguardian>");
 
   return lines.join("\n");
 }
 
-export function registerBeforeAgentStartHook(api: OpenClawPluginApi, cfg: ClawGuardConfig): void {
+export function registerBeforeAgentStartHook(api: OpenClawPluginApi, cfg: ClawGuardianConfig): void {
   // Only inject if there's something to monitor
   if (!cfg.secrets.enabled && !cfg.pii.enabled && !cfg.destructive.enabled) {
     return;
@@ -76,7 +76,7 @@ export function registerBeforeAgentStartHook(api: OpenClawPluginApi, cfg: ClawGu
   api.on(
     "before_agent_start",
     (_event, _ctx) => {
-      const context = buildClawGuardContext(cfg);
+      const context = buildClawGuardianContext(cfg);
       return {
         prependContext: context,
       };

@@ -1,5 +1,5 @@
 /**
- * ClawGuard plugin configuration types and validation.
+ * ClawGuardian plugin configuration types and validation.
  */
 
 /**
@@ -12,7 +12,7 @@ export type Severity = "critical" | "high" | "medium" | "low";
  * - "block": Reject the tool call entirely
  * - "redact": Replace sensitive data with [REDACTED] (secrets/PII only)
  * - "confirm": Require user confirmation (exec/bash tools only, via OpenClaw approval flow)
- * - "agent-confirm": Block until agent retries with _clawguard_confirm: true
+ * - "agent-confirm": Block until agent retries with _clawguardian_confirm: true
  * - "warn": Log warning but allow execution
  * - "log": Silent logging only
  */
@@ -31,7 +31,7 @@ export type SeverityActions = {
 /**
  * Secrets detection config (API keys, tokens, cloud credentials, private keys).
  */
-export type ClawGuardSecretsConfig = {
+export type ClawGuardianSecretsConfig = {
   enabled: boolean;
   /** Default action for secrets */
   action: SeverityAction;
@@ -49,7 +49,7 @@ export type ClawGuardSecretsConfig = {
 /**
  * PII detection config.
  */
-export type ClawGuardPiiConfig = {
+export type ClawGuardianPiiConfig = {
   enabled: boolean;
   /** Default action for PII */
   action: SeverityAction;
@@ -68,7 +68,7 @@ export type ClawGuardPiiConfig = {
  * Destructive command detection config.
  * Based on SafeExec patterns (https://github.com/agentify-sh/safeexec).
  */
-export type ClawGuardDestructiveConfig = {
+export type ClawGuardianDestructiveConfig = {
   enabled: boolean;
   /** Default action for destructive commands */
   action: SeverityAction;
@@ -86,44 +86,44 @@ export type ClawGuardDestructiveConfig = {
   };
 };
 
-export type ClawGuardCustomPattern = {
+export type ClawGuardianCustomPattern = {
   name: string;
   pattern: string;
   severity?: Severity;
   action?: SeverityAction;
 };
 
-export type ClawGuardAllowlist = {
+export type ClawGuardianAllowlist = {
   tools?: string[];
   patterns?: string[];
   sessions?: string[];
 };
 
-export type ClawGuardLogging = {
+export type ClawGuardianLogging = {
   logDetections: boolean;
   logLevel: "debug" | "info" | "warn" | "error";
 };
 
-export type ClawGuardConfig = {
+export type ClawGuardianConfig = {
   filterToolInputs: boolean;
   filterToolOutputs: boolean;
-  secrets: ClawGuardSecretsConfig;
-  pii: ClawGuardPiiConfig;
-  destructive: ClawGuardDestructiveConfig;
-  customPatterns: ClawGuardCustomPattern[];
-  allowlist: ClawGuardAllowlist;
-  logging: ClawGuardLogging;
+  secrets: ClawGuardianSecretsConfig;
+  pii: ClawGuardianPiiConfig;
+  destructive: ClawGuardianDestructiveConfig;
+  customPatterns: ClawGuardianCustomPattern[];
+  allowlist: ClawGuardianAllowlist;
+  logging: ClawGuardianLogging;
 };
 
 // Legacy type aliases for backward compatibility
-export type ClawGuardMode = SeverityAction;
+export type ClawGuardianMode = SeverityAction;
 export type DestructiveAction = SeverityAction;
-export type ClawGuardFilters = ClawGuardSecretsConfig["categories"] & {
-  pii: ClawGuardPiiConfig["categories"] & { enabled: boolean };
+export type ClawGuardianFilters = ClawGuardianSecretsConfig["categories"] & {
+  pii: ClawGuardianPiiConfig["categories"] & { enabled: boolean };
 };
-export type ClawGuardPiiFilters = ClawGuardPiiConfig["categories"] & { enabled: boolean };
+export type ClawGuardianPiiFilters = ClawGuardianPiiConfig["categories"] & { enabled: boolean };
 
-const DEFAULT_SECRETS: ClawGuardSecretsConfig = {
+const DEFAULT_SECRETS: ClawGuardianSecretsConfig = {
   enabled: true,
   action: "redact",
   severityActions: {
@@ -140,7 +140,7 @@ const DEFAULT_SECRETS: ClawGuardSecretsConfig = {
   },
 };
 
-const DEFAULT_PII: ClawGuardPiiConfig = {
+const DEFAULT_PII: ClawGuardianPiiConfig = {
   enabled: true,
   action: "redact",
   severityActions: {
@@ -157,7 +157,7 @@ const DEFAULT_PII: ClawGuardPiiConfig = {
   },
 };
 
-const DEFAULT_DESTRUCTIVE: ClawGuardDestructiveConfig = {
+const DEFAULT_DESTRUCTIVE: ClawGuardianDestructiveConfig = {
   enabled: true,
   action: "confirm",
   severityActions: {
@@ -177,9 +177,9 @@ const DEFAULT_DESTRUCTIVE: ClawGuardDestructiveConfig = {
   },
 };
 
-const DEFAULT_ALLOWLIST: ClawGuardAllowlist = {};
+const DEFAULT_ALLOWLIST: ClawGuardianAllowlist = {};
 
-const DEFAULT_LOGGING: ClawGuardLogging = {
+const DEFAULT_LOGGING: ClawGuardianLogging = {
   logDetections: true,
   logLevel: "warn",
 };
@@ -214,7 +214,7 @@ function parseSeverityActions(value: unknown, defaults: SeverityActions): Severi
   };
 }
 
-function parseSecrets(value: unknown): ClawGuardSecretsConfig {
+function parseSecrets(value: unknown): ClawGuardianSecretsConfig {
   if (!isPlainObject(value)) {
     return DEFAULT_SECRETS;
   }
@@ -233,7 +233,7 @@ function parseSecrets(value: unknown): ClawGuardSecretsConfig {
   };
 }
 
-function parsePii(value: unknown): ClawGuardPiiConfig {
+function parsePii(value: unknown): ClawGuardianPiiConfig {
   if (!isPlainObject(value)) {
     return DEFAULT_PII;
   }
@@ -252,7 +252,7 @@ function parsePii(value: unknown): ClawGuardPiiConfig {
   };
 }
 
-function parseDestructive(value: unknown): ClawGuardDestructiveConfig {
+function parseDestructive(value: unknown): ClawGuardianDestructiveConfig {
   if (!isPlainObject(value)) {
     return DEFAULT_DESTRUCTIVE;
   }
@@ -277,13 +277,13 @@ function parseDestructive(value: unknown): ClawGuardDestructiveConfig {
   };
 }
 
-function parseCustomPatterns(value: unknown): ClawGuardCustomPattern[] {
+function parseCustomPatterns(value: unknown): ClawGuardianCustomPattern[] {
   if (!Array.isArray(value)) {
     return [];
   }
   return value
     .filter((item): item is Record<string, unknown> => isPlainObject(item))
-    .map((item): ClawGuardCustomPattern => {
+    .map((item): ClawGuardianCustomPattern => {
       const name = typeof item.name === "string" ? item.name : "custom";
       const pattern = typeof item.pattern === "string" ? item.pattern : "";
       const severity: Severity | undefined =
@@ -302,7 +302,7 @@ function parseCustomPatterns(value: unknown): ClawGuardCustomPattern[] {
     .filter((p) => p.pattern.length > 0);
 }
 
-function parseAllowlist(value: unknown): ClawGuardAllowlist {
+function parseAllowlist(value: unknown): ClawGuardianAllowlist {
   if (!isPlainObject(value)) {
     return DEFAULT_ALLOWLIST;
   }
@@ -318,7 +318,7 @@ function parseAllowlist(value: unknown): ClawGuardAllowlist {
   return { tools, patterns, sessions };
 }
 
-function parseLogging(value: unknown): ClawGuardLogging {
+function parseLogging(value: unknown): ClawGuardianLogging {
   if (!isPlainObject(value)) {
     return DEFAULT_LOGGING;
   }
@@ -338,7 +338,7 @@ function parseLogging(value: unknown): ClawGuardLogging {
 /**
  * Parse and validate plugin config with defaults.
  */
-export function parseClawGuardConfig(raw: unknown): ClawGuardConfig {
+export function parseClawGuardianConfig(raw: unknown): ClawGuardianConfig {
   if (!raw || !isPlainObject(raw)) {
     return {
       filterToolInputs: true,

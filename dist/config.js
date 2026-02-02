@@ -1,5 +1,5 @@
 /**
- * ClawGuard plugin configuration types and validation.
+ * ClawGuardian plugin configuration types and validation.
  */
 const DEFAULT_SECRETS = {
     enabled: true,
@@ -192,7 +192,7 @@ function parseLogging(value) {
 /**
  * Parse and validate plugin config with defaults.
  */
-export function parseClawGuardConfig(raw) {
+export function parseClawGuardianConfig(raw) {
     if (!raw || !isPlainObject(raw)) {
         return {
             filterToolInputs: true,

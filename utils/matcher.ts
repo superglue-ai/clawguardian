@@ -2,7 +2,7 @@
  * Pattern matching engine with allowlist support.
  */
 
-import type { ClawGuardAllowlist, ClawGuardConfig, SeverityAction, Severity } from "../config.js";
+import type { ClawGuardianAllowlist, ClawGuardianConfig, SeverityAction, Severity } from "../config.js";
 import { getActionForSeverity } from "../config.js";
 import { buildPatterns, detectAll, type SecretMatch } from "../patterns/index.js";
 
@@ -25,7 +25,7 @@ const SEVERITY_RANK: Record<Severity, number> = {
  * Check if tool/session is allowlisted.
  */
 export function isAllowlisted(
-  allowlist: ClawGuardAllowlist,
+  allowlist: ClawGuardianAllowlist,
   toolName: string,
   sessionKey?: string,
 ): boolean {
@@ -62,7 +62,7 @@ export function isMatchAllowlisted(matchedText: string, allowlistPatterns: strin
  * Get the appropriate config section for a match category.
  */
 function getConfigForCategory(
-  cfg: ClawGuardConfig,
+  cfg: ClawGuardianConfig,
   category: SecretMatch["category"],
 ): { action: SeverityAction; severityActions: Record<Severity, SeverityAction> } {
   switch (category) {
@@ -80,7 +80,7 @@ function getConfigForCategory(
  * Detect secrets in text; returns the highest severity match.
  * Respects allowlist patterns.
  */
-export function detectSecret(text: string, cfg: ClawGuardConfig): MatchResult | undefined {
+export function detectSecret(text: string, cfg: ClawGuardianConfig): MatchResult | undefined {
   const patterns = buildPatterns(cfg);
   const allMatches = detectAll(text, patterns);
 
@@ -125,7 +125,7 @@ export function detectSecret(text: string, cfg: ClawGuardConfig): MatchResult | 
 /**
  * Check if text contains any secret (for block decision).
  */
-export function hasSecret(text: string, cfg: ClawGuardConfig): boolean {
+export function hasSecret(text: string, cfg: ClawGuardianConfig): boolean {
   return detectSecret(text, cfg) !== undefined;
 }
 
@@ -134,7 +134,7 @@ export function hasSecret(text: string, cfg: ClawGuardConfig): boolean {
  */
 export function getActionForFirstMatch(
   text: string,
-  cfg: ClawGuardConfig,
+  cfg: ClawGuardianConfig,
 ): SeverityAction | undefined {
   const result = detectSecret(text, cfg);
   return result?.action;

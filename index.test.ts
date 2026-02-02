@@ -1,9 +1,9 @@
 /**
- * ClawGuard plugin tests: config, patterns, matcher, redactor, validators, destructive.
+ * ClawGuardian plugin tests: config, patterns, matcher, redactor, validators, destructive.
  */
 
 import { describe, it, expect } from "vitest";
-import { parseClawGuardConfig } from "./config.js";
+import { parseClawGuardianConfig } from "./config.js";
 import {
   detectDestructive,
   isDestructiveRm,
@@ -18,9 +18,9 @@ import { isAllowlisted, isMatchAllowlisted, detectSecret, hasSecret } from "./ut
 import { redactText, redactParams } from "./utils/redact.js";
 import { isValidCreditCard, isValidPhone, isValidSSN, isValidEmail } from "./utils/validators.js";
 
-describe("parseClawGuardConfig", () => {
+describe("parseClawGuardianConfig", () => {
   it("returns defaults when config is empty", () => {
-    const cfg = parseClawGuardConfig(undefined);
+    const cfg = parseClawGuardianConfig(undefined);
     expect(cfg.filterToolInputs).toBe(true);
     expect(cfg.filterToolOutputs).toBe(true);
     // New structure
@@ -32,7 +32,7 @@ describe("parseClawGuardConfig", () => {
   });
 
   it("parses secrets config", () => {
-    const cfg = parseClawGuardConfig({
+    const cfg = parseClawGuardianConfig({
       secrets: { action: "block", categories: { apiKeys: false } },
     });
     expect(cfg.secrets.action).toBe("block");
@@ -40,7 +40,7 @@ describe("parseClawGuardConfig", () => {
   });
 
   it("parses pii config", () => {
-    const cfg = parseClawGuardConfig({
+    const cfg = parseClawGuardianConfig({
       pii: { enabled: false, categories: { email: true } },
     });
     expect(cfg.pii.enabled).toBe(false);
@@ -48,7 +48,7 @@ describe("parseClawGuardConfig", () => {
   });
 
   it("parses filter toggles", () => {
-    const cfg = parseClawGuardConfig({
+    const cfg = parseClawGuardianConfig({
       filterToolInputs: false,
       filterToolOutputs: false,
       secrets: { categories: { apiKeys: false } },
@@ -61,7 +61,7 @@ describe("parseClawGuardConfig", () => {
   });
 
   it("parses custom patterns", () => {
-    const cfg = parseClawGuardConfig({
+    const cfg = parseClawGuardianConfig({
       customPatterns: [
         { name: "internal", pattern: "INTERNAL_[A-Z0-9]{32}", action: "block", severity: "high" },
       ],
@@ -74,7 +74,7 @@ describe("parseClawGuardConfig", () => {
   });
 
   it("parses allowlist", () => {
-    const cfg = parseClawGuardConfig({
+    const cfg = parseClawGuardianConfig({
       allowlist: { tools: ["web_search"], sessions: ["main"] },
     });
     expect(cfg.allowlist.tools).toEqual(["web_search"]);
@@ -84,8 +84,8 @@ describe("parseClawGuardConfig", () => {
 
 describe("buildPatterns / detectFirst / detectAll", () => {
   // Helper to create a config for pattern tests
-  const makeConfig = (overrides: Partial<ReturnType<typeof parseClawGuardConfig>> = {}) => {
-    const base = parseClawGuardConfig({});
+  const makeConfig = (overrides: Partial<ReturnType<typeof parseClawGuardianConfig>> = {}) => {
+    const base = parseClawGuardianConfig({});
     return { ...base, ...overrides };
   };
 
@@ -129,14 +129,14 @@ describe("buildPatterns / detectFirst / detectAll", () => {
 
 describe("redactText", () => {
   it("redacts API key", () => {
-    const cfg = parseClawGuardConfig({});
+    const cfg = parseClawGuardianConfig({});
     const out = redactText("key is sk-proj-abcdefghijklmnop", cfg);
     expect(out).not.toContain("sk-proj-abcdefghijklmnop");
     expect(out).toMatch(/sk-pro/);
   });
 
   it("redacts SSN", () => {
-    const cfg = parseClawGuardConfig({});
+    const cfg = parseClawGuardianConfig({});
     const out = redactText("SSN: 123-45-6789", cfg);
     expect(out).not.toContain("123-45-6789");
     expect(out).toContain("SSN:");
@@ -145,7 +145,7 @@ describe("redactText", () => {
 
 describe("redactParams", () => {
   it("redacts string values in params", () => {
-    const cfg = parseClawGuardConfig({});
+    const cfg = parseClawGuardianConfig({});
     const params = { cmd: "echo", env: "API_KEY=sk-secret1234567890" };
     const out = redactParams(params, cfg);
     expect(out.env).not.toBe("API_KEY=sk-secret1234567890");
@@ -153,7 +153,7 @@ describe("redactParams", () => {
   });
 
   it("passes through non-string values", () => {
-    const cfg = parseClawGuardConfig({});
+    const cfg = parseClawGuardianConfig({});
     const params = { count: 42, enabled: true };
     const out = redactParams(params, cfg);
     expect(out.count).toBe(42);
@@ -187,20 +187,20 @@ describe("isMatchAllowlisted", () => {
 
 describe("detectSecret / hasSecret", () => {
   it("returns undefined when text has no secret", () => {
-    const cfg = parseClawGuardConfig({});
+    const cfg = parseClawGuardianConfig({});
     expect(detectSecret("hello world", cfg)).toBeUndefined();
     expect(hasSecret("hello world", cfg)).toBe(false);
   });
 
   it("returns match and action when secret found", () => {
-    const cfg = parseClawGuardConfig({ mode: "redact" });
+    const cfg = parseClawGuardianConfig({ mode: "redact" });
     const result = detectSecret("token ghp_abcdefghijklmnopqrstuvwxyz123456", cfg);
     expect(result).toBeDefined();
     expect(result?.action).toBe("redact");
   });
 
   it("respects custom pattern with block action", () => {
-    const cfg = parseClawGuardConfig({
+    const cfg = parseClawGuardianConfig({
       mode: "redact",
       customPatterns: [{ name: "internal", pattern: "INTERNAL_[A-Z0-9]{32}", action: "block" }],
     });
@@ -210,7 +210,7 @@ describe("detectSecret / hasSecret", () => {
   });
 
   it("respects allowlist patterns", () => {
-    const cfg = parseClawGuardConfig({
+    const cfg = parseClawGuardianConfig({
       allowlist: { patterns: ["sk-test-.*"] },
     });
     const result = detectSecret("key sk-test-allowlisted-value-here", cfg);
@@ -221,8 +221,8 @@ describe("detectSecret / hasSecret", () => {
 describe("plugin", () => {
   it("exports plugin with id and register", async () => {
     const plugin = (await import("./index.js")).default;
-    expect(plugin.id).toBe("clawguard");
-    expect(plugin.name).toBe("ClawGuard");
+    expect(plugin.id).toBe("clawguardian");
+    expect(plugin.name).toBe("ClawGuardian");
     expect(typeof plugin.register).toBe("function");
   });
 });
@@ -320,7 +320,7 @@ describe("validators", () => {
 describe("pattern validation integration", () => {
   // Helper to create PII-only config
   const makePiiConfig = () =>
-    parseClawGuardConfig({
+    parseClawGuardianConfig({
       secrets: { enabled: false },
       pii: { enabled: true, categories: { ssn: true, creditCard: true, email: true, phone: true } },
     });
@@ -381,7 +381,7 @@ describe("pattern validation integration", () => {
 describe("API key patterns", () => {
   // Helper to create API-key-only config
   const makeApiKeyConfig = () =>
-    parseClawGuardConfig({
+    parseClawGuardianConfig({
       secrets: {
         enabled: true,
         categories: { apiKeys: true, cloudCredentials: false, privateKeys: false, tokens: false },
@@ -455,7 +455,7 @@ describe("API key patterns", () => {
 describe("cloud credential patterns", () => {
   // Helper to create cloud-credentials-only config
   const makeCloudConfig = () =>
-    parseClawGuardConfig({
+    parseClawGuardianConfig({
       secrets: {
         enabled: true,
         categories: { apiKeys: false, cloudCredentials: true, privateKeys: false, tokens: false },
@@ -493,7 +493,7 @@ describe("cloud credential patterns", () => {
 describe("token patterns", () => {
   // Helper to create tokens-only config
   const makeTokenConfig = () =>
-    parseClawGuardConfig({
+    parseClawGuardianConfig({
       secrets: {
         enabled: true,
         categories: { apiKeys: false, cloudCredentials: false, privateKeys: false, tokens: true },
@@ -549,7 +549,7 @@ describe("token patterns", () => {
 describe("private key patterns", () => {
   // Helper to create private-keys-only config
   const makePkConfig = () =>
-    parseClawGuardConfig({
+    parseClawGuardianConfig({
       secrets: {
         enabled: true,
         categories: { apiKeys: false, cloudCredentials: false, privateKeys: true, tokens: false },
@@ -588,7 +588,7 @@ MIIEvgIBADANBgkqhkiG9w0BAQEFAASC
 describe("custom patterns", () => {
   // Helper to create config with only custom patterns enabled
   const makeCustomConfig = (customPatterns: Array<{ name: string; pattern: string }>) =>
-    parseClawGuardConfig({
+    parseClawGuardianConfig({
       secrets: { enabled: false },
       pii: { enabled: false },
       customPatterns,
@@ -619,7 +619,7 @@ describe("custom patterns", () => {
 
 describe("redaction edge cases", () => {
   it("redacts multiple secrets in same text", () => {
-    const cfg = parseClawGuardConfig({});
+    const cfg = parseClawGuardianConfig({});
     const text = "key1: sk-proj-abcdefghijklmnop key2: ghp_abcdefghijklmnopqrstuvwxyz";
     const out = redactText(text, cfg);
     expect(out).not.toContain("sk-proj-abcdefghijklmnop");
@@ -627,7 +627,7 @@ describe("redaction edge cases", () => {
   });
 
   it("handles nested JSON params", () => {
-    const cfg = parseClawGuardConfig({});
+    const cfg = parseClawGuardianConfig({});
     const params = {
       outer: {
         inner: {
@@ -640,7 +640,7 @@ describe("redaction edge cases", () => {
   });
 
   it("handles arrays in params", () => {
-    const cfg = parseClawGuardConfig({});
+    const cfg = parseClawGuardianConfig({});
     const params = {
       keys: ["sk-proj-abcdefghijklmnop", "ghp_abcdefghijklmnopqrstuvwxyz"],
     };
@@ -650,19 +650,19 @@ describe("redaction edge cases", () => {
   });
 
   it("preserves non-secret text", () => {
-    const cfg = parseClawGuardConfig({});
+    const cfg = parseClawGuardianConfig({});
     const text = "Hello world, this is a normal message without secrets.";
     const out = redactText(text, cfg);
     expect(out).toBe(text);
   });
 
   it("handles empty strings", () => {
-    const cfg = parseClawGuardConfig({});
+    const cfg = parseClawGuardianConfig({});
     expect(redactText("", cfg)).toBe("");
   });
 
   it("handles null and undefined in params", () => {
-    const cfg = parseClawGuardConfig({});
+    const cfg = parseClawGuardianConfig({});
     const params = { a: null, b: undefined, c: "sk-proj-abcdefghijklmnop" };
     const out = redactParams(params, cfg);
     expect(out.a).toBeNull();
@@ -673,7 +673,7 @@ describe("redaction edge cases", () => {
 
 describe("filter toggles", () => {
   it("respects disabled apiKeys filter", () => {
-    const cfg = parseClawGuardConfig({
+    const cfg = parseClawGuardianConfig({
       secrets: { enabled: false },
       pii: { enabled: false },
     });
@@ -682,7 +682,7 @@ describe("filter toggles", () => {
   });
 
   it("respects disabled PII filter", () => {
-    const cfg = parseClawGuardConfig({
+    const cfg = parseClawGuardianConfig({
       secrets: { enabled: false },
       pii: {
         enabled: false,
@@ -695,7 +695,7 @@ describe("filter toggles", () => {
   });
 
   it("respects individual PII toggles", () => {
-    const cfg = parseClawGuardConfig({
+    const cfg = parseClawGuardianConfig({
       secrets: { enabled: false },
       pii: {
         enabled: true,
@@ -711,7 +711,7 @@ describe("filter toggles", () => {
 describe("credit card formats", () => {
   // Helper to create credit-card-only config
   const makeCcConfig = () =>
-    parseClawGuardConfig({
+    parseClawGuardianConfig({
       secrets: { enabled: false },
       pii: {
         enabled: true,
@@ -755,7 +755,7 @@ describe("credit card formats", () => {
 describe("phone number formats", () => {
   // Helper to create phone-only config
   const makePhoneConfig = () =>
-    parseClawGuardConfig({
+    parseClawGuardianConfig({
       secrets: { enabled: false },
       pii: {
         enabled: true,
@@ -797,7 +797,7 @@ describe("phone number formats", () => {
 
 describe("detectAll comprehensive", () => {
   it("finds all secrets in complex text", () => {
-    const cfg = parseClawGuardConfig({
+    const cfg = parseClawGuardianConfig({
       pii: { categories: { email: true } },
     });
     const patterns = buildPatterns(cfg);
@@ -818,7 +818,7 @@ describe("detectAll comprehensive", () => {
   });
 
   it("returns empty array for clean text", () => {
-    const cfg = parseClawGuardConfig({});
+    const cfg = parseClawGuardianConfig({});
     const patterns = buildPatterns(cfg);
     const matches = detectAll("Hello world, nothing sensitive here.", patterns);
     expect(matches).toEqual([]);
@@ -1125,7 +1125,7 @@ describe("detectDestructive", () => {
 
 describe("destructive config parsing", () => {
   it("returns default destructive config with severity actions", () => {
-    const cfg = parseClawGuardConfig({});
+    const cfg = parseClawGuardianConfig({});
     expect(cfg.destructive.enabled).toBe(true);
     expect(cfg.destructive.action).toBe("confirm");
     // Default severity actions
@@ -1139,7 +1139,7 @@ describe("destructive config parsing", () => {
   });
 
   it("parses destructive config with custom severity actions", () => {
-    const cfg = parseClawGuardConfig({
+    const cfg = parseClawGuardianConfig({
       destructive: {
         enabled: true,
         action: "block",
@@ -1165,14 +1165,14 @@ describe("destructive config parsing", () => {
   });
 
   it("can disable destructive detection", () => {
-    const cfg = parseClawGuardConfig({
+    const cfg = parseClawGuardianConfig({
       destructive: { enabled: false },
     });
     expect(cfg.destructive.enabled).toBe(false);
   });
 
   it("includes privilegeEscalation category by default", () => {
-    const cfg = parseClawGuardConfig({});
+    const cfg = parseClawGuardianConfig({});
     expect(cfg.destructive.categories.privilegeEscalation).toBe(true);
   });
 });

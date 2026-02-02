@@ -1,7 +1,7 @@
 /**
- * before_agent_start hook: inject ClawGuard instructions into the system prompt.
+ * before_agent_start hook: inject ClawGuardian instructions into the system prompt.
  */
 import type { OpenClawPluginApi } from "openclaw/plugin-sdk";
-import type { ClawGuardConfig } from "../config.js";
-export declare function registerBeforeAgentStartHook(api: OpenClawPluginApi, cfg: ClawGuardConfig): void;
+import type { ClawGuardianConfig } from "../config.js";
+export declare function registerBeforeAgentStartHook(api: OpenClawPluginApi, cfg: ClawGuardianConfig): void;
 //# sourceMappingURL=before-agent-start.d.ts.map

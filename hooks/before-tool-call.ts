@@ -3,7 +3,7 @@
  */
 
 import type { OpenClawPluginApi } from "openclaw/plugin-sdk";
-import type { ClawGuardConfig, Severity } from "../config.js";
+import type { ClawGuardianConfig, Severity } from "../config.js";
 import { getActionForSeverity } from "../config.js";
 import { detectDestructive, type DestructiveMatch } from "../destructive/index.js";
 import { isAllowlisted } from "../utils/matcher.js";
@@ -12,14 +12,14 @@ import { redactParams } from "../utils/redact.js";
 
 /**
  * Check if the agent has explicitly confirmed this tool call.
- * The agent can add `_clawguard_confirm: true` to acknowledge the risk.
+ * The agent can add `_clawguardian_confirm: true` to acknowledge the risk.
  */
 function hasConfirmFlag(params: unknown): boolean {
   if (typeof params !== "object" || params === null) {
     return false;
   }
   const p = params as Record<string, unknown>;
-  return p._clawguard_confirm === true;
+  return p._clawguardian_confirm === true;
 }
 
 /**
@@ -29,13 +29,13 @@ function stripConfirmFlag(params: unknown): Record<string, unknown> {
   if (typeof params !== "object" || params === null) {
     return {};
   }
-  const { _clawguard_confirm, ...rest } = params as Record<string, unknown>;
+  const { _clawguardian_confirm, ...rest } = params as Record<string, unknown>;
   return rest;
 }
 
 function categoryEnabled(
   match: DestructiveMatch,
-  categories: ClawGuardConfig["destructive"]["categories"],
+  categories: ClawGuardianConfig["destructive"]["categories"],
 ): boolean {
   switch (match.category) {
     case "file_delete":
@@ -57,7 +57,7 @@ function categoryEnabled(
   }
 }
 
-export function registerBeforeToolCallHook(api: OpenClawPluginApi, cfg: ClawGuardConfig): void {
+export function registerBeforeToolCallHook(api: OpenClawPluginApi, cfg: ClawGuardianConfig): void {
   if (!cfg.filterToolInputs && !cfg.destructive.enabled) {
     return;
   }
@@ -88,7 +88,7 @@ export function registerBeforeToolCallHook(api: OpenClawPluginApi, cfg: ClawGuar
 
           // Skip if action is "log" - just log silently
           if (action !== "log") {
-            const msg = `ClawGuard: ${destructiveMatch.severity} severity - ${destructiveMatch.reason}`;
+            const msg = `ClawGuardian: ${destructiveMatch.severity} severity - ${destructiveMatch.reason}`;
 
             if (cfg.logging.logDetections) {
               api.logger.warn(msg);
@@ -98,7 +98,7 @@ export function registerBeforeToolCallHook(api: OpenClawPluginApi, cfg: ClawGuar
           if (action === "block") {
             return {
               block: true,
-              blockReason: `Blocked by ClawGuard: ${destructiveMatch.reason}`,
+              blockReason: `Blocked by ClawGuardian: ${destructiveMatch.reason}`,
             };
           }
 
@@ -109,7 +109,7 @@ export function registerBeforeToolCallHook(api: OpenClawPluginApi, cfg: ClawGuar
                 params: {
                   ...params,
                   ask: "always",
-                  _clawguard: {
+                  _clawguardian: {
                     reason: destructiveMatch.reason,
                     severity: destructiveMatch.severity,
                     category: destructiveMatch.category,
@@ -120,12 +120,12 @@ export function registerBeforeToolCallHook(api: OpenClawPluginApi, cfg: ClawGuar
             // For non-exec tools, fall back to agent-confirm behavior
           }
 
-          // agent-confirm: block until agent retries with _clawguard_confirm: true
+          // agent-confirm: block until agent retries with _clawguardian_confirm: true
           if (action === "confirm" || action === "agent-confirm") {
             if (confirmed) {
               if (cfg.logging.logDetections) {
                 api.logger.info(
-                  `ClawGuard: Agent confirmed destructive action - ${destructiveMatch.reason}`,
+                  `ClawGuardian: Agent confirmed destructive action - ${destructiveMatch.reason}`,
                 );
               }
               // Strip the confirm flag and allow
@@ -134,7 +134,7 @@ export function registerBeforeToolCallHook(api: OpenClawPluginApi, cfg: ClawGuar
             // Block and ask agent to confirm
             return {
               block: true,
-              blockReason: `ClawGuard: ${destructiveMatch.reason}. To proceed, re-run with \`_clawguard_confirm: true\` in params.`,
+              blockReason: `ClawGuardian: ${destructiveMatch.reason}. To proceed, re-run with \`_clawguardian_confirm: true\` in params.`,
             };
           }
 
@@ -151,14 +151,14 @@ export function registerBeforeToolCallHook(api: OpenClawPluginApi, cfg: ClawGuar
           const { match, action } = result;
 
           if (cfg.logging.logDetections && action !== "log") {
-            const msg = `ClawGuard: ${match.type} (${match.severity}) detected in tool ${toolName} params`;
+            const msg = `ClawGuardian: ${match.type} (${match.severity}) detected in tool ${toolName} params`;
             api.logger.warn(msg);
           }
 
           if (action === "block") {
             return {
               block: true,
-              blockReason: `Blocked by ClawGuard: ${match.type} detected in tool parameters`,
+              blockReason: `Blocked by ClawGuardian: ${match.type} detected in tool parameters`,
             };
           }
 
@@ -173,17 +173,17 @@ export function registerBeforeToolCallHook(api: OpenClawPluginApi, cfg: ClawGuar
             if (confirmed) {
               if (cfg.logging.logDetections) {
                 api.logger.info(
-                  `ClawGuard: Agent confirmed sending ${match.type} - proceeding with redaction`,
+                  `ClawGuardian: Agent confirmed sending ${match.type} - proceeding with redaction`,
                 );
               }
               // Even with confirmation, redact the sensitive data
               const redacted = redactParams(params, cfg);
-              return { params: { ...redacted, _clawguard_confirmed: match.type } };
+              return { params: { ...redacted, _clawguardian_confirmed: match.type } };
             }
             // Block and ask agent to confirm
             return {
               block: true,
-              blockReason: `ClawGuard: ${match.type} detected. To proceed (with redaction), re-run with \`_clawguard_confirm: true\` in params.`,
+              blockReason: `ClawGuardian: ${match.type} detected. To proceed (with redaction), re-run with \`_clawguardian_confirm: true\` in params.`,
             };
           }
         }

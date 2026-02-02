@@ -1,7 +1,7 @@
 /**
- * Pattern registry: aggregates patterns by category for ClawGuard.
+ * Pattern registry: aggregates patterns by category for ClawGuardian.
  */
-import type { ClawGuardConfig, Severity } from "../config.js";
+import type { ClawGuardianConfig, Severity } from "../config.js";
 export type { PatternSpec } from "./api-keys.js";
 export type { ValidatedPatternSpec } from "./pii.js";
 export { API_KEY_PATTERNS } from "./api-keys.js";
@@ -28,7 +28,7 @@ export type PatternWithValidator = {
 /**
  * Build all active regex patterns from config.
  */
-export declare function buildPatterns(cfg: ClawGuardConfig): PatternWithValidator[];
+export declare function buildPatterns(cfg: ClawGuardianConfig): PatternWithValidator[];
 /**
  * Find first secret match in text. Returns undefined if none.
  * Validates matches using the pattern's validator if present.

@@ -2,7 +2,7 @@
  * Redaction helpers: mask tokens, handle PEM blocks.
  */
 
-import type { ClawGuardConfig } from "../config.js";
+import type { ClawGuardianConfig } from "../config.js";
 import { buildPatterns } from "../patterns/index.js";
 
 const REDACT_MIN_LENGTH = 18;
@@ -44,7 +44,7 @@ function redactMatch(match: string, groups: string[]): string {
 /**
  * Redact sensitive data in text using config's pattern set.
  */
-export function redactText(text: string, cfg: ClawGuardConfig): string {
+export function redactText(text: string, cfg: ClawGuardianConfig): string {
   if (!text || typeof text !== "string") {
     return text;
   }
@@ -63,7 +63,7 @@ export function redactText(text: string, cfg: ClawGuardConfig): string {
  * Redact sensitive data in a JSON-serializable value (e.g. tool params).
  * Recursively processes strings; other values are passed through.
  */
-export function redactParams(params: unknown, cfg: ClawGuardConfig): Record<string, unknown> {
+export function redactParams(params: unknown, cfg: ClawGuardianConfig): Record<string, unknown> {
   if (params === null || params === undefined) {
     return {};
   }

@@ -4,7 +4,7 @@
  */
 
 import type { OpenClawPluginApi } from "openclaw/plugin-sdk";
-import type { ClawGuardConfig } from "../config.js";
+import type { ClawGuardianConfig } from "../config.js";
 import { detectSecret } from "../utils/matcher.js";
 import { redactText } from "../utils/redact.js";
 
@@ -19,7 +19,7 @@ function isTextBlock(block: unknown): block is { type: "text"; text: string } {
   );
 }
 
-export function registerToolResultPersistHook(api: OpenClawPluginApi, cfg: ClawGuardConfig): void {
+export function registerToolResultPersistHook(api: OpenClawPluginApi, cfg: ClawGuardianConfig): void {
   if (!cfg.filterToolOutputs) {
     return;
   }
@@ -41,14 +41,14 @@ export function registerToolResultPersistHook(api: OpenClawPluginApi, cfg: ClawG
             // Log the detection
             if (cfg.logging.logDetections) {
               api.logger.warn(
-                `ClawGuard: Blocking tool output - ${result.match.type} (${result.match.severity}) detected`,
+                `ClawGuardian: Blocking tool output - ${result.match.type} (${result.match.severity}) detected`,
               );
             }
             // Replace entire content with blocked message
             (msg as { content: unknown[] }).content = [
               {
                 type: "text",
-                text: `[ClawGuard: Output blocked - ${result.match.type} detected]`,
+                text: `[ClawGuardian: Output blocked - ${result.match.type} detected]`,
               },
             ];
             return { message: event.message };

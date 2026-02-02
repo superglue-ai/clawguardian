@@ -26,13 +26,13 @@ export function registerToolResultPersistHook(api, cfg) {
                 if (result && result.action === "block") {
                     // Log the detection
                     if (cfg.logging.logDetections) {
-                        api.logger.warn(`ClawGuard: Blocking tool output - ${result.match.type} (${result.match.severity}) detected`);
+                        api.logger.warn(`ClawGuardian: Blocking tool output - ${result.match.type} (${result.match.severity}) detected`);
                     }
                     // Replace entire content with blocked message
                     msg.content = [
                         {
                             type: "text",
-                            text: `[ClawGuard: Output blocked - ${result.match.type} detected]`,
+                            text: `[ClawGuardian: Output blocked - ${result.match.type} detected]`,
                         },
                     ];
                     return { message: event.message };
