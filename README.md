@@ -107,12 +107,12 @@ plugins:
 
 ## Severity Levels
 
-| Severity | Secrets | PII | Destructive |
-|----------|---------|-----|-------------|
-| Critical | Private keys | - | rm -rf /, DROP DATABASE, dd |
-| High | API keys, tokens, cloud creds | SSN, credit cards | rm -rf, git reset --hard, sudo |
-| Medium | - | Email, phone | kill, git checkout |
-| Low | - | - | git branch -d |
+| Severity | Secrets | PII | Destructive | Default Action |
+|----------|---------|-----|-------------|----------------|
+| Critical | Private keys | - | rm -rf /, DROP DATABASE, dd | `block` |
+| High | API keys, tokens, cloud creds | SSN, credit cards | rm -rf, git reset --hard, sudo | `redact` / `confirm` |
+| Medium | - | Email, phone | kill, git checkout | `redact` / `confirm` |
+| Low | - | - | git branch -d | `warn` |
 
 ## Agent Confirmation
 
