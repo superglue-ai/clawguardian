@@ -171,7 +171,7 @@
               "medium": {
                 "type": "string",
                 "enum": ["block", "redact", "agent-confirm", "warn", "log"],
-                "default": "redact"
+                "default": "warn"
               },
               "low": {
                 "type": "string",

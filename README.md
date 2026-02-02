@@ -48,7 +48,7 @@ plugins:
       severityActions:
         critical: block
         high: redact         # SSN, credit cards
-        medium: redact       # email, phone
+        medium: warn         # email, phone
         low: warn
       categories:
         ssn: true
@@ -111,7 +111,7 @@ plugins:
 |----------|---------|-----|-------------|----------------|
 | Critical | Private keys | - | rm -rf /, DROP DATABASE, dd | `block` |
 | High | API keys, tokens, cloud creds | SSN, credit cards | rm -rf, git reset --hard, sudo | `redact` / `confirm` |
-| Medium | - | Email, phone | kill, git checkout | `redact` / `confirm` |
+| Medium | - | Email, phone | kill, git checkout | `warn` / `confirm` |
 | Low | - | - | git branch -d | `warn` |
 
 ## Agent Confirmation

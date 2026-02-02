@@ -146,7 +146,7 @@ const DEFAULT_PII: ClawGuardPiiConfig = {
   severityActions: {
     critical: "block",
     high: "redact", // SSN, credit card
-    medium: "redact", // Email, phone
+    medium: "warn", // Email, phone
     low: "warn",
   },
   categories: {
